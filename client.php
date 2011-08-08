@@ -5,21 +5,15 @@ abstract class Client {
 	abstract protected function __construct();
 	protected $curl_options, $domain;
 
-	function __call($method, $args) {
-		//No arguments should be passed in
-		if (count($args) > 0) {
-			throw new Exception("Incorrect Parameters");
-		}
-
+	function __get($method) {
 		return new APICall($method, $this->domain, $this->curl_options);
-	}	
+	}
+
 }
 
 class TokenClient extends Client {
 	function __construct($domain, $token) {
-
 		$this->domain = $domain;
-
 		$this->curl_options = array(
 			CURLOPT_USERPWD => $token
 		);
