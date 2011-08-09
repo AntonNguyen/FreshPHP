@@ -8,12 +8,8 @@ class APICall {
 		$this->curl_options = $curl_options;
 	}
 
+	// TO DO: REFACTOR!!!!!
 	function __call($method, $args) {
-		// Get the method to call
-		//var_dump($this->name.".".$method);
-
-		// 1) Construct the xml from the args
-		$xml_data = 
 
 		$defaults = array(
 			CURLOPT_HEADER => false,
@@ -24,38 +20,68 @@ class APICall {
 			CURLOPT_SSL_VERIFYPEER => FALSE,
 			CURLOPT_SSL_VERIFYHOST => FALSE,
 			CURLOPT_USERAGENT => "FreshPHP",
-
 		);
 
-		$xml_data = '<request method="'.$this->name.'.'.$method.'"></request>';
+		// Convert from an array to xml
+		$root = '<request method="'.$this->name.'.'.$method.'"></request>';
+		$xml = $this->array2xml($root, $args);
 
-		// 2) Make the call to our api
-		$ch = curl_init($this->domain);
-		curl_setopt_array($ch, ($this->curl_options + $defaults));
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $xml_data);
-		
-		$result = curl_exec($ch);
-		if (!$result) {
-			trigger_error(curl_error($ch));
-		} 
-
-	    curl_close($ch);
-
-		// Examine the xml element
-		$xml = new SimpleXMLElement($result);
-		if ($xml && isset($xml['status'])) {
-			if ($xml['status'] != "ok") {
-				return "Error: " . (string)$xml->error;
-			}
-
-			// Convert to array and return
-			return $xml;
-
-		} else {
-			// Error
-		}
-		return $result;
+		// // 2) Make the call to our api
+		// $ch = curl_init($this->domain);
+		// curl_setopt_array($ch, ($this->curl_options + $defaults));
+		// curl_setopt($ch, CURLOPT_POSTFIELDS, $xml_data);
+		// 
+		// $result = curl_exec($ch);
+		// if (!$result) {
+		// 	trigger_error(curl_error($ch));
+		// } 
+		// 
+		// 	    curl_close($ch);0
+		// 
+		// // Examine the xml element
+		// $xml = parse($result);
+		// if ($xml && isset($xml['status'])) {
+		// 	if ($xml['status'] != "ok") {
+		// 		return "Error: " . (string)$xml->error;
+		// 	}
+		// 
+		// 	// Convert to array and return
+		// 	return $this->parse($result);
+		// 
+		// } else {
+		// 	// Error
+		// }
+		// return $result;
+		return "";
 	}
+
+	function xml2array($xml_string) {
+		$xml = new SimpleXMLElement($xml_string);
+		return $xml;
+	}
+
+	function array2xml($root, $array) {
+		if ($root instanceof SimpleXMLElement) {
+			
+		} else {
+			$xml = new SimpleXMLElement($root);
+		}
+		
+		foreach($array as $parent => $value) {
+			if (is_array($value)) {
+				$xmlfied = $this->array2xml($parent, $value);
+				$xml->addChild($parent);
+
+				$parent->addChild();
+			} else {
+				$xml->addChild($parent, $value);
+			}
+		}
+
+
+		return $xml->asXML();
+	}
+
 }
 
 ?>
