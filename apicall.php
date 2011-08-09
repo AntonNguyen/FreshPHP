@@ -1,4 +1,6 @@
 <?php
+include("arraytoxml.php");
+
 class APICall {
 	protected $name, $domain, $curl_options;
 
@@ -23,7 +25,9 @@ class APICall {
 		);
 
 		// Convert from an array to xml
-		$root = '<request method="'.$this->name.'.'.$method.'"></request>';
+
+		
+		$root->addAttribute("method", $this->name . "." . $method);
 		$xml = $this->array2xml($root, $args);
 
 		// // 2) Make the call to our api
@@ -53,33 +57,6 @@ class APICall {
 		// }
 		// return $result;
 		return "";
-	}
-
-	function xml2array($xml_string) {
-		$xml = new SimpleXMLElement($xml_string);
-		return $xml;
-	}
-
-	function array2xml($root, $array) {
-		if ($root instanceof SimpleXMLElement) {
-			
-		} else {
-			$xml = new SimpleXMLElement($root);
-		}
-		
-		foreach($array as $parent => $value) {
-			if (is_array($value)) {
-				$xmlfied = $this->array2xml($parent, $value);
-				$xml->addChild($parent);
-
-				$parent->addChild();
-			} else {
-				$xml->addChild($parent, $value);
-			}
-		}
-
-
-		return $xml->asXML();
 	}
 
 }
