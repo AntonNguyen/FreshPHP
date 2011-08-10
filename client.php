@@ -1,12 +1,12 @@
 <?php
-include("apicall.php");
+include("transport.php");
 
 abstract class Client {
 	abstract protected function __construct();
 	protected $curl_options, $domain;
 
 	function __get($method) {
-		return new APICall($method, $this->domain, $this->curl_options);
+		return new Transport($method, $this->domain, $this->curl_options);
 	}
 
 }

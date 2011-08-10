@@ -37,16 +37,19 @@ class array2xml {
 		$i = 0;
 		foreach($data as $key=>$value){
 			if(is_array($value)){
-				$sub_obj[$i] = $this->data->createElement($key);
-				$obj->appendChild($sub_obj[$i]);
+
 
 				// If array has no keys
 				if (!$this->is_associative($value)) {
 					// Go through each sub_value in the array and add it
 					foreach($value as $sub_value) {
+						$sub_obj[$i] = $this->data->createElement($key);
+						$obj->appendChild($sub_obj[$i]);
 						$this->recurse_node($sub_value, $sub_obj[$i]);
 					}
 				} else {
+					$sub_obj[$i] = $this->data->createElement($key);
+					$obj->appendChild($sub_obj[$i]);
 					$this->recurse_node($value, $sub_obj[$i]);
 				}
 			} else {

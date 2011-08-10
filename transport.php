@@ -1,7 +1,7 @@
 <?php
 include("arraytoxml.php");
 
-class APICall {
+class Transport {
 	protected $name, $domain, $curl_options;
 
 	function __construct($name, $domain, $curl_options) {

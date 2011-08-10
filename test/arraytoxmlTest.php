@@ -41,49 +41,48 @@ class arraytoxmlTest extends PHPUnit_Framework_TestCase {
 								<contact>
 									<contact_id>1</contact_id>
 								</contact>
+								<contact>
+									<contact_id>3</contact_id>
+								</contact>
 							</contacts>
 						</invoice>
 					</response>';
 
 		$actual = new array2xml("invoice.list", 
-		
-		
-		
 			array("invoice" => 
-				array(
-					"invoice_id" => "15",
-					"client_id" => "14",
-					"lines" =>
-						array(
+					array(
+						"invoice_id" => "15",
+						"client_id" => "14",
+						"lines" =>
 							array("line" => 
 								array(
-									"line_id" => "1",
-									"description" => "cowbows"
+									array(
+										"line_id" => "1",
+										"description" => "cowbows"
+										),
+									array(
+										"line_id" => "2",
+										"description" => "aliens"
+										)
 									)
-							),
-							array("line" => 
-								array(
-									"line_id" => "2",
-									"description" => "aliens"
-									)
-							),
-						),
-					"contacts" =>
-						array(
+								),
+						"contacts" =>
 							array("contact" =>
 								array(
-									"contact_id" => "2"
-								)
-							),
-							array("contact" =>
-								array(
-									"contact_id" => "1"
+									array(
+										"contact_id" => "2"
+									),
+									array(
+										"contact_id" => "1"
+									),
+									array(
+										"contact_id" => "3"
+									)
 								)
 							)
 						)
-				)
-			)
-		);
+					)
+			);
 
 		$actual = $actual->getXML();
 
