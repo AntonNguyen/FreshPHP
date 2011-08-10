@@ -1,5 +1,5 @@
 <?php
-include("arraytoxml.php");
+include("adapters.php");
 
 class Transport {
 	protected $name, $domain, $curl_options;
