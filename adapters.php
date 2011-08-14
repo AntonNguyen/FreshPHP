@@ -15,13 +15,14 @@ class array2xml {
 	*/
 	public  function __construct($method, $array){
 		if(!is_array($array)){
-			throw new Exception('array2xml requires an array', 1);
+			throw new Exception('An array must be provided', 1);
 			unset($this);
 		}
 
 		$this->data = new DOMDocument('1.0');
 
-		$this->dom_tree = $this->data->createElement('response');
+		$this->dom_tree = $this->data->createElement('request');
+		$this->dom_tree->setAttribute("method", $method);
 
 		$this->data->appendChild($this->dom_tree);
 		$this->recurse_node($array, $this->dom_tree);
@@ -34,29 +35,32 @@ class array2xml {
 	*/
 	private function recurse_node($data, $obj){
 		$i = 0;
-		foreach($data as $key=>$value){
-			if(is_array($value)){
 
-				// If array has no keys
-				if (!$this->is_associative($value)) {
-					// Go through each sub_value in the array and add it
-					foreach($value as $sub_value) {
+		if ($this->is_associative($data)) {
+			foreach($data as $key=>$value){
+				if(is_array($value)){
+
+					// If array has no keys
+					if (!$this->is_associative($value)) {
+						// Go through each sub_value in the array and add it
+						foreach($value as $sub_value) {
+							$sub_obj[$i] = $this->data->createElement($key);
+							$obj->appendChild($sub_obj[$i]);
+							$this->recurse_node($sub_value, $sub_obj[$i]);
+						}
+					} else {
 						$sub_obj[$i] = $this->data->createElement($key);
 						$obj->appendChild($sub_obj[$i]);
-						$this->recurse_node($sub_value, $sub_obj[$i]);
+						$this->recurse_node($value, $sub_obj[$i]);
 					}
 				} else {
-					$sub_obj[$i] = $this->data->createElement($key);
+					//straight up data, no weirdness
+					$sub_obj[$i] = $this->data->createElement($key, $value);
 					$obj->appendChild($sub_obj[$i]);
-					$this->recurse_node($value, $sub_obj[$i]);
 				}
-			} else {
-				//straight up data, no weirdness
-				$sub_obj[$i] = $this->data->createElement($key, $value);
-				$obj->appendChild($sub_obj[$i]);
-			}
 
-			$i++;
+				$i++;
+			}
 		}
 	}
 
@@ -85,7 +89,7 @@ class array2xml {
 */
 class xmltoarray {
 
-	public $array;
+	protected $array;
 
 	/**
 	* basic constructor
@@ -93,10 +97,11 @@ class xmltoarray {
 	* @param array $array
 	*/
 	public  function __construct($xml){
-		$doc = new DOMDocument('1.0');
-		
+
 		//Remove all whitespace
 		$xml = preg_replace("/>\s+</", "><", $xml);
+
+		$doc = new DOMDocument('1.0');
 		$doc->loadXml($xml);
 
 		$this->array = $this->recurse_node($doc);
@@ -115,7 +120,7 @@ class xmltoarray {
 				switch($childNode->nodeType) {
 					case XML_ELEMENT_NODE:
 						$nodeName = (string)$childNode->nodeName;
-						// Create an array of these subselements
+
 						if (isset($children[$childNode->nodeName])) {
 							if ($this->is_associative($children[$childNode->nodeName])) {
 								$temp = $children[$childNode->nodeName];
@@ -134,6 +139,8 @@ class xmltoarray {
 						return $childNode->nodeValue;
 				}
 			}
+		} else {
+			return "";
 		}
 
 		return $children;

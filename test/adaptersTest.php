@@ -20,10 +20,11 @@ class arraytoxmlTest extends PHPUnit_Framework_TestCase {
 */
 	public function test_convert_full_array_to_xml() {
 		$expected = '<?xml version="1.0"?>
-					<response>
+					<request method="invoice.list">
 						<invoice>
 							<invoice_id>15</invoice_id>
 							<client_id>14</client_id>
+							<notes></notes>
 							<lines>
 								<line>
 									<line_id>1</line_id>
@@ -46,13 +47,14 @@ class arraytoxmlTest extends PHPUnit_Framework_TestCase {
 								</contact>
 							</contacts>
 						</invoice>
-					</response>';
+					</request>';
 
 		$actual = new array2xml("invoice.list", 
 			array("invoice" => 
 					array(
 						"invoice_id" => "15",
 						"client_id" => "14",
+						"notes" => "",
 						"lines" =>
 							array("line" => 
 								array(
@@ -99,6 +101,7 @@ class arraytoxmlTest extends PHPUnit_Framework_TestCase {
 						array(
 							"invoice_id" => "15",
 							"client_id" => "14",
+							"notes" => "",
 							"lines" =>
 								array("line" => 
 									array(
@@ -136,6 +139,7 @@ class arraytoxmlTest extends PHPUnit_Framework_TestCase {
 					<invoice>
 						<invoice_id>15</invoice_id>
 						<client_id>14</client_id>
+						<notes></notes>
 						<lines>
 							<line>
 								<line_id>1</line_id>
