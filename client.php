@@ -1,15 +1,56 @@
 <?php
-include("transport.php");
+include("element.php");
+include("adapters.php");
 
 abstract class Client {
 	abstract protected function __construct();
-	protected $curl_options, $domain;
+	protected $curl_options, $domain, $element;
 
-	function __get($method) {
-		return new Transport($method, $this->domain, $this->curl_options);
+	function __get($element) {
+		$this->element = new Element($element);
+		return $this;
+	}
+
+	function __call($method, $args) {
+		$xml = $this->element->$method($args);
+		return $this->make_api_call($xml);
+	}
+
+	private function make_api_call($xml) {
+		$defaults = array(
+			CURLOPT_HEADER => FALSE,
+			CURLOPT_NOBODY => FALSE,
+			CURLOPT_RETURNTRANSFER => TRUE,
+			CURLOPT_TIMEOUT => 4,
+			CURLOPT_SSL_VERIFYPEER => FALSE,
+			CURLOPT_SSL_VERIFYHOST => FALSE,
+			CURLOPT_USERAGENT => "FreshPHP",
+		);
+
+		$ch = curl_init($this->domain);
+		curl_setopt_array($ch, ($this->curl_options + $defaults));
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $xml);
+
+		$result = curl_exec($ch);
+		if (!$result) {
+			throw new FreshPHPException(curl_error($ch));
+		}
+
+		curl_close($ch);
+
+		$parser = new xmltoarray($result);
+		$array_result = $parser->getArray();
+
+		if (isset($array_result['error'])) {
+			throw new FreshPHPException($array_result['error']);
+		}
+		return $array_result;
+
 	}
 
 }
+
+class FreshPHPException extends Exception {}
 
 class TokenClient extends Client {
 	function __construct($domain, $token) {
@@ -22,22 +63,7 @@ class TokenClient extends Client {
 
 class OAuthClient extends Client {
 	function __construct() {
-		// $header[] = 'Content-Type: application/x-www-form-urlencoded';
-		// 
-		// $curl_options = array(
-		// 	CURLOPT_HTTPHEADER => $header,
-		// 	CURLOPT_POST => true,
-		// 	CURLOPT_POSTFIELDS => urlencode(
-		// 		"oauth_consumer_key=example.com&
-		// 		oauth_signature_method=RSA-SHA1&
-		// 		oauth_signature=wOJIO9A2W5mFwDgiDvZbTSMK%2FPY%3D&
-		// 		oauth_timestamp=137131200&
-		// 		oauth_nonce=4572616e48616d6d65724c61686176&
-		// 		oauth_version=1.0"
-		// 	)
-		// );
 	}
 }
-
 
 ?>
