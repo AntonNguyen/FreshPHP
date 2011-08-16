@@ -33,24 +33,20 @@ abstract class Client {
 
 		$result = curl_exec($ch);
 		if (!$result) {
-			throw new FreshPHPException(curl_error($ch));
+			throw new Exception(curl_error($ch));
 		}
 
 		curl_close($ch);
 
-		$parser = new xmltoarray($result);
+		$parser = new XML2Array($result);
 		$array_result = $parser->getArray();
 
-		if (isset($array_result['error'])) {
-			throw new FreshPHPException($array_result['error']);
-		}
-		return $array_result;
+		// Examine the result
 
+		return $array_result;
 	}
 
 }
-
-class FreshPHPException extends Exception {}
 
 class TokenClient extends Client {
 	function __construct($domain, $token) {

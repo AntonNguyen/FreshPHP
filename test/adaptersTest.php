@@ -2,22 +2,8 @@
 require_once 'PHPUnit/Framework.php';
 require '../adapters.php';
 
-class arraytoxmlTest extends PHPUnit_Framework_TestCase {
-	/*
-	public function testCall() {
-		$this->assertTrue(true);
-	}
+class AdaptersTest extends PHPUnit_Framework_TestCase {
 
-	public function test_convert_empty_array_to_xml() {
-		$invoice = new APICall("invoice", "https://anton.freshbooks.com", array());
-
-		$expected = '<?xml version="1.0"?><root/>';
-		$actual = $invoice->array2xml("<root/>", array());
-		$actual = str_replace("\n", "", $actual);
-
-		$this->assertEquals($expected, $actual);
-	}
-*/
 	public function test_convert_full_array_to_xml() {
 		$expected = '<?xml version="1.0"?>
 					<request method="invoice.list">
@@ -49,7 +35,7 @@ class arraytoxmlTest extends PHPUnit_Framework_TestCase {
 						</invoice>
 					</request>';
 
-		$actual = new array2xml("invoice.list", 
+		$actual = new Array2XML("invoice.list", 
 			array("invoice" => 
 					array(
 						"invoice_id" => "15",
@@ -164,13 +150,8 @@ class arraytoxmlTest extends PHPUnit_Framework_TestCase {
 					</invoice>
 				</response>';
 
-		$actual = new xmltoarray($xml);
+		$actual = new XML2Array($xml);
 		$this->assertEquals($expected, $actual->getArray());
 	}
-
-	// public function test_convert_xml_to_array() {
-	// 	$invoice = new APICall("invoice", "https://anton.freshbooks.com", array());
-	// 	$this->assertEquals("", $invoice->xml2array(""));
-	// }
 }
 ?>

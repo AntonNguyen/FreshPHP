@@ -3,7 +3,7 @@
 * Class for converting 
 *
 */
-class array2xml {
+class Array2XML {
 
 	public $data;
 	public $dom_tree;
@@ -87,7 +87,7 @@ class array2xml {
 * basic class for converting xml to an array.
 *
 */
-class xmltoarray {
+class XML2Array {
 
 	protected $array;
 
